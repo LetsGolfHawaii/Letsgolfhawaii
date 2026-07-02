@@ -1,0 +1,2301 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LetsGolfHawaii Player Hub</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/LGH_logo_badge_black.png">
+  <meta name="theme-color" content="#18583c">
+  <style>
+    :root {
+      --ink: #17201b;
+      --muted: #637169;
+      --line: #dce5df;
+      --green: #18583c;
+      --green-deep: #0e3f2c;
+      --green-soft: #eaf3ee;
+      --gold: #c7892f;
+      --ocean: #187c8d;
+      --sky: #dff3f6;
+      --coral: #d96d45;
+      --panel: rgba(255, 255, 255, 0.96);
+      --shadow: 0 18px 54px rgba(17, 36, 25, 0.2);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(223, 243, 246, 0.74), rgba(234, 243, 238, 0.95)),
+        url("assets/hawaii-golf-hole-background.png") center / cover fixed;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button, .button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 8px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 24px 0;
+    }
+
+    .app {
+      background: var(--panel);
+      border: 1px solid rgba(24, 124, 141, 0.18);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 104px minmax(0, 1fr) 108px;
+      gap: 16px;
+      align-items: center;
+      padding: 18px 22px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(223, 243, 246, 0.88) 46%, rgba(255, 246, 224, 0.9)),
+        linear-gradient(90deg, rgba(24, 88, 60, 0.12), rgba(24, 124, 141, 0.12), rgba(199, 137, 47, 0.16));
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .logo {
+      width: 100%;
+      max-height: 104px;
+      object-fit: contain;
+    }
+
+    .coach-photo {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 999px;
+      border: 3px solid rgba(199, 137, 47, 0.72);
+      background: white;
+      box-shadow: 0 10px 24px rgba(17, 36, 25, 0.16);
+    }
+
+    .hero-copy {
+      text-align: center;
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--ocean);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, h4 {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-family: "Marker Felt", "Chalkboard SE", "Trebuchet MS", cursive;
+      font-size: clamp(2.25rem, 5vw, 3.8rem);
+      line-height: 0.95;
+      color: var(--green-deep);
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.82), 0 8px 22px rgba(24, 124, 141, 0.16);
+    }
+
+    .hero-copy span {
+      display: block;
+      width: min(500px, 100%);
+      margin: 10px auto 0;
+      color: var(--green);
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      min-height: 620px;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      padding: 18px;
+      border-right: 1px solid rgba(24, 124, 141, 0.16);
+      background:
+        linear-gradient(180deg, rgba(234, 243, 238, 0.92), rgba(223, 243, 246, 0.62));
+    }
+
+    .sidebar h2 {
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+    }
+
+    .player-form {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--ink);
+      padding: 9px 10px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 160px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--ocean);
+      box-shadow: 0 0 0 3px rgba(24, 124, 141, 0.16);
+    }
+
+    .primary {
+      background: linear-gradient(135deg, var(--green-deep), var(--green));
+      color: white;
+      box-shadow: 0 10px 24px rgba(24, 88, 60, 0.2);
+    }
+
+    .secondary {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .player-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .cloud-box {
+      margin: 16px 0;
+      padding: 14px;
+      border: 1px solid rgba(24, 124, 141, 0.18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .cloud-box h2 {
+      margin-bottom: 8px;
+    }
+
+    .cloud-box p {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+    .cloud-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cloud-box {
+      order: 1;
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .auth-tab {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .auth-tab.active {
+      background: linear-gradient(135deg, var(--green-deep), var(--ocean));
+      color: white;
+      border-color: var(--ocean);
+    }
+
+    #playerForm {
+      order: 2;
+    }
+
+    #welcomeBox {
+      order: 3;
+    }
+
+    #playerList {
+      order: 4;
+    }
+
+    .mode-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      margin-bottom: 12px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(24, 88, 60, 0.1);
+      color: var(--green-deep);
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .mode-note {
+      margin: -4px 0 12px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+    .welcome-box {
+      margin-bottom: 14px;
+      padding: 14px;
+      border: 1px solid rgba(199, 137, 47, 0.24);
+      border-left: 4px solid var(--gold);
+      border-radius: 8px;
+      background: rgba(255, 246, 224, 0.74);
+    }
+
+    .welcome-box strong {
+      display: block;
+      color: var(--green-deep);
+      margin-bottom: 5px;
+    }
+
+    .welcome-box p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .player-button {
+      min-height: auto;
+      padding: 12px;
+      justify-content: flex-start;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--ocean);
+      color: var(--ink);
+    }
+
+    .player-button.active {
+      background: linear-gradient(135deg, var(--green-deep), var(--ocean));
+      color: white;
+      border-color: var(--ocean);
+      border-left-color: var(--gold);
+    }
+
+    .player-button span {
+      display: block;
+      color: inherit;
+      opacity: 0.78;
+      font-size: 0.82rem;
+      margin-top: 3px;
+    }
+
+    .main {
+      min-width: 0;
+      padding: 18px;
+    }
+
+    body.logged-out .layout {
+      display: block;
+      min-height: auto;
+    }
+
+    body.logged-out .sidebar {
+      width: min(520px, 100%);
+      margin: 0 auto;
+      border-right: 0;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(223, 243, 246, 0.76));
+    }
+
+    body.logged-out .main,
+    body.logged-out #modeBadge,
+    body.logged-out #sidebarNote,
+    body.logged-out #welcomeBox,
+    body.logged-out #playerList,
+    body.logged-out #syncCloud,
+    body.logged-out #signOut {
+      display: none !important;
+    }
+
+    body.logged-out #sidebarTitle {
+      text-align: center;
+      font-family: "Marker Felt", "Chalkboard SE", "Trebuchet MS", cursive;
+      font-size: 1.8rem;
+      color: var(--green-deep);
+      margin-bottom: 14px;
+    }
+
+    body.logged-out.login-mode #playerForm,
+    body.logged-out.login-mode .signup-action,
+    body.logged-out.create-mode .signin-action,
+    body.logged-out.create-mode #forgotPassword,
+    body.logged-out.create-mode #lessonTotalLabel {
+      display: none !important;
+    }
+
+    body.logged-out.create-mode #playerForm {
+      display: grid !important;
+    }
+
+    body.logged-in .auth-tabs {
+      display: none;
+    }
+
+    body.logged-in #authForm,
+    body.logged-in #resetPasswordForm {
+      display: none !important;
+    }
+
+    body.logged-in .cloud-box {
+      margin: 0 0 14px;
+      padding: 12px;
+      border-left: 4px solid var(--ocean);
+      background: rgba(255, 255, 255, 0.58);
+      box-shadow: none;
+    }
+
+    body.logged-in .cloud-box h2 {
+      display: none;
+    }
+
+    body.logged-in .cloud-box p {
+      margin-bottom: 10px;
+      font-size: 0.78rem;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .tab {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, var(--green-deep), var(--ocean));
+      color: white;
+      border-color: var(--ocean);
+      box-shadow: 0 8px 20px rgba(24, 124, 141, 0.18);
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .panel-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-top: 4px solid rgba(24, 124, 141, 0.58);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.76);
+    }
+
+    .card strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .dashboard-card {
+      min-height: 118px;
+      display: grid;
+      align-content: space-between;
+    }
+
+    .dashboard-value {
+      display: block;
+      margin-top: 10px;
+      color: var(--green-deep);
+      font-size: 1.5rem;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .booking-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: 12px;
+    }
+
+    .booking-action-card {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .booking-action-card .button {
+      width: fit-content;
+    }
+
+    .profile-overview {
+      display: grid;
+      gap: 14px;
+    }
+
+    .profile-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.82);
+    }
+
+    .profile-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      padding: 12px;
+      border: 1px solid rgba(24, 124, 141, 0.16);
+      border-radius: 8px;
+      background: rgba(223, 243, 246, 0.42);
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 5px;
+      color: var(--green-deep);
+      font-size: 1.12rem;
+    }
+
+    .profile-section {
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .profile-section:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .profile-section strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .stat {
+      display: grid;
+      gap: 8px;
+    }
+
+    .round-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .lesson-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .lesson-row,
+    .round-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .lesson-row:first-child,
+    .round-row:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .lesson-row span,
+    .round-row span {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .lesson-row strong,
+    .round-row strong {
+      margin: 0;
+    }
+
+    .club-distance-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .club-distance-row {
+      display: grid;
+      grid-template-columns: minmax(86px, 1fr) minmax(0, 120px) minmax(0, 120px);
+      gap: 10px;
+      align-items: end;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.68);
+    }
+
+    .club-name {
+      color: var(--green-deep);
+      font-weight: 900;
+      padding-bottom: 9px;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--green);
+      line-height: 1;
+    }
+
+    .meter {
+      height: 10px;
+      border-radius: 999px;
+      background: #e7eee9;
+      overflow: hidden;
+    }
+
+    .meter span {
+      display: block;
+      width: var(--value);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--ocean), var(--green), var(--gold));
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .faq-item {
+      min-height: 112px;
+      display: block;
+      background: rgba(255, 255, 255, 0.76);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--coral);
+      box-shadow: none;
+    }
+
+    .faq-item strong {
+      display: block;
+    }
+
+    .faq-item p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: 180ms ease;
+      pointer-events: none;
+      background: linear-gradient(135deg, var(--green-deep), var(--ocean));
+      color: white;
+      padding: 12px 14px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 860px) {
+      .hero, .layout, .tabs, .card-grid, .faq-grid, .club-distance-row, .profile-metrics, .dashboard-grid, .booking-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .club-name {
+        padding-bottom: 0;
+      }
+
+      .hero-copy {
+        order: -1;
+      }
+
+      .logo {
+        width: min(150px, 100%);
+        justify-self: center;
+      }
+
+      .coach-photo {
+        width: min(150px, 100%);
+        justify-self: center;
+      }
+
+      .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+  </style>
+</head>
+<body class="logged-out login-mode">
+  <main class="page">
+    <section class="app">
+      <header class="hero">
+        <img class="coach-photo" src="assets/coach-photo.jpeg" alt="Coach Andrew">
+        <div class="hero-copy">
+          <p class="eyebrow">Player Hub</p>
+          <h1>LetsGolfHawaii</h1>
+          <span>Book lessons. Track rounds. Grow your game in Hawaii.</span>
+        </div>
+        <img class="logo" src="assets/LGH_logo_badge_black.png" alt="Lets Golf Hawaii logo">
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <span class="mode-badge" id="modeBadge">Local Preview</span>
+          <h2 id="sidebarTitle">Player Profiles</h2>
+          <p class="mode-note" id="sidebarNote">Sign in to save profiles.</p>
+          <div class="welcome-box" id="welcomeBox">
+            <strong>Welcome</strong>
+            <p id="welcomeText">Sign in, fill out your player profile, then save it for coach review.</p>
+          </div>
+          <form class="player-form" id="playerForm">
+            <label>Name
+              <input name="name" required placeholder="Player name">
+            </label>
+            <label>Age
+              <input name="age" type="number" min="3" max="100" required placeholder="Age">
+            </label>
+            <label>Skill Level
+              <select name="skill" required>
+                <option value="">Choose level</option>
+                <option>Beginner</option>
+                <option>Intermediate</option>
+                <option>Advanced</option>
+                <option>Tournament Player</option>
+              </select>
+            </label>
+            <label>Starting Handicap
+              <input name="handicap" type="number" min="-10" max="54" step="0.1" placeholder="Example: 18.5">
+            </label>
+            <label>Contact
+              <input name="contact" required placeholder="Email or phone">
+            </label>
+            <label id="lessonTotalLabel">Lessons Purchased
+              <input name="lessonTotal" type="number" min="1" max="100" value="10" required>
+            </label>
+            <button class="primary" id="playerSubmitButton" type="submit">Add Player</button>
+          </form>
+          <div class="cloud-box">
+            <h2>Account</h2>
+            <p id="cloudStatus">Supabase is ready to connect.</p>
+            <div class="auth-tabs" role="tablist" aria-label="Account options">
+              <button class="auth-tab active" type="button" data-auth-tab="login">Login</button>
+              <button class="auth-tab" type="button" data-auth-tab="create">Create Profile</button>
+            </div>
+            <form class="player-form" id="authForm">
+              <label>Email
+                <input name="email" type="email" placeholder="coach@email.com">
+              </label>
+              <label>Password
+                <input name="password" type="password" placeholder="Password">
+              </label>
+              <div class="cloud-actions">
+                <button class="primary signin-action" type="submit" data-auth-action="signin">Sign In</button>
+                <button class="secondary signup-action" type="submit" data-auth-action="signup">Create Login</button>
+                <button class="secondary" id="forgotPassword" type="button">Forgot Password</button>
+              </div>
+            </form>
+            <form class="player-form hidden" id="resetPasswordForm">
+              <label>New Password
+                <input name="newPassword" type="password" minlength="6" placeholder="New password">
+              </label>
+              <button class="primary" type="submit">Update Password</button>
+            </form>
+            <div class="cloud-actions">
+              <button class="secondary" id="syncCloud" type="button">Save Profile</button>
+              <button class="secondary" id="signOut" type="button">Sign Out</button>
+            </div>
+          </div>
+          <div class="player-list" id="playerList"></div>
+        </aside>
+
+        <section class="main">
+          <nav class="tabs" aria-label="Player tabs">
+            <button class="tab active" type="button" data-tab="dashboard">Dashboard</button>
+            <button class="tab" type="button" data-tab="profile">Profile</button>
+            <button class="tab" type="button" data-tab="booking">Booking</button>
+            <button class="tab" type="button" data-tab="stats">Statistics</button>
+            <button class="tab" type="button" data-tab="clubs">Clubs</button>
+            <button class="tab" type="button" data-tab="notes">Coach Notes</button>
+            <button class="tab" type="button" data-tab="faq">FAQ</button>
+          </nav>
+
+          <section class="panel active" id="dashboard">
+            <div class="panel-head">
+              <div>
+                <h2 id="dashboardTitle">Player Dashboard</h2>
+                <p id="dashboardSubtitle">A quick look at lessons, progress, and next steps.</p>
+              </div>
+            </div>
+            <div class="dashboard-grid">
+              <div class="card dashboard-card">
+                <div>
+                  <strong>Lessons Remaining</strong>
+                  <p id="dashboardLessonText">Select a player to view lessons.</p>
+                </div>
+                <span class="dashboard-value" id="dashboardLessonsRemaining">-</span>
+              </div>
+              <div class="card dashboard-card">
+                <div>
+                  <strong>Handicap</strong>
+                  <p>Updated from saved rounds.</p>
+                </div>
+                <span class="dashboard-value" id="dashboardHandicap">-</span>
+              </div>
+              <div class="card dashboard-card">
+                <div>
+                  <strong>Latest Booking</strong>
+                  <p id="dashboardBookingText">No booked lessons yet.</p>
+                </div>
+                <a class="button primary" href="https://calendly.com/andrew-ka-ne-golf" target="_blank" rel="noopener noreferrer">Book Lesson</a>
+              </div>
+              <div class="card dashboard-card">
+                <div>
+                  <strong>Profile Status</strong>
+                  <p id="dashboardApprovalText">Profile status will show here.</p>
+                </div>
+                <span class="dashboard-value" id="dashboardStatus">-</span>
+              </div>
+              <div class="card dashboard-card">
+                <div>
+                  <strong>Last Round</strong>
+                  <p id="dashboardRoundText">Save a round to show recent scoring.</p>
+                </div>
+                <span class="dashboard-value" id="dashboardScore">-</span>
+              </div>
+              <div class="card dashboard-card">
+                <div>
+                  <strong>Coach Note</strong>
+                  <p id="dashboardNoteText">No coach note yet.</p>
+                </div>
+                <span class="dashboard-value">LGH</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="profile">
+            <div class="panel-head">
+              <div>
+                <h2 id="profileName">Player Profile</h2>
+                <p id="profileSummary">Select or add a player to view the profile.</p>
+              </div>
+            </div>
+            <div class="profile-overview">
+              <div class="profile-card">
+                <div class="profile-metrics">
+                  <div class="metric">
+                    <span>Age</span>
+                    <strong id="profileAge">-</strong>
+                  </div>
+                  <div class="metric">
+                    <span>Skill</span>
+                    <strong id="profileSkill">-</strong>
+                  </div>
+                  <div class="metric">
+                    <span>Handicap</span>
+                    <strong id="profileHandicap">-</strong>
+                  </div>
+                  <div class="metric">
+                    <span>Contact</span>
+                    <strong id="profileContact">-</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <strong id="accessCardTitle">Access</strong>
+                <p id="accessCardText">Sign in to see the correct coach or player view.</p>
+              </div>
+              <div class="card" id="approvalCard">
+                <strong>Profile Approval</strong>
+                <p id="approvalStatusText">Profile status will show here.</p>
+                <p style="margin: 12px 0 0;">
+                  <button class="primary" id="approveProfileButton" type="button">Approve Profile</button>
+                </p>
+              </div>
+              <div class="card" id="connectStudentCard">
+                <strong>Connect Student Login</strong>
+                <p id="studentLoginStatus">No student login connected yet.</p>
+                <label style="margin-top: 12px;">Student Login Email
+                  <input id="studentLoginEmail" type="email" placeholder="student@email.com">
+                </label>
+                <p style="margin: 12px 0 0;">
+                  <button class="primary" id="connectStudentButton" type="button">Connect Student</button>
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="booking">
+            <div class="panel-head">
+              <div>
+                <h2>Book a Lesson</h2>
+                <p>Choose a time, then check your lesson count and booked lessons below.</p>
+              </div>
+            </div>
+            <div class="booking-grid">
+              <div class="card booking-action-card">
+                <div>
+                  <strong id="bookingPlayer">Ready to book</strong>
+                  <p>Open Calendly to book, cancel, or reschedule. Return here to view your lesson package.</p>
+                </div>
+                <a class="button primary" href="https://calendly.com/andrew-ka-ne-golf" target="_blank" rel="noopener noreferrer">Book Lesson</a>
+              </div>
+              <div class="card">
+                <strong>Lesson Package</strong>
+                <p id="lessonProgress">0 of 10 lessons scheduled.</p>
+                <div class="meter" style="margin-top: 10px;"><span id="lessonMeter" style="--value: 0%;"></span></div>
+                <p id="lessonReminder" style="margin-top: 10px;">Book your next lesson when you are ready.</p>
+                <p style="margin: 12px 0 0;">
+                  <button class="primary" id="recordLesson" type="button">Record Scheduled Lesson</button>
+                </p>
+              </div>
+              <div class="card">
+                <strong>Booked Lessons</strong>
+                <p id="bookedLessonsSummary">No booked lessons yet.</p>
+                <div class="lesson-list" id="bookedLessonsList"></div>
+              </div>
+              <div class="card" id="remindersCard">
+                <strong>Reminders</strong>
+                <p id="notificationStatus">Browser notifications are not enabled yet.</p>
+                <p style="margin: 12px 0 0; display: flex; gap: 8px; flex-wrap: wrap;">
+                  <button class="secondary" id="enableNotifications" type="button">Enable Notifications</button>
+                  <button class="secondary" id="sendTestNotification" type="button">Send Test Reminder</button>
+                </p>
+                <label style="margin-top: 12px;">Reminder Message
+                  <textarea id="instagramMessage" readonly></textarea>
+                </label>
+                <p style="margin: 12px 0 0; display: flex; gap: 8px; flex-wrap: wrap;">
+                  <button class="primary" id="copyInstagramMessage" type="button">Copy Message</button>
+                  <a class="button secondary" href="https://www.instagram.com/letsgolfhawaii/" target="_blank" rel="noopener noreferrer">Open Instagram</a>
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="stats">
+            <div class="panel-head">
+              <div>
+                <h2>Player Statistics</h2>
+                <p>Example round: Course Waialae, Fairway 8/14, GIR 10/18, Putts 32, Total Score 82.</p>
+              </div>
+            </div>
+            <form id="statsForm">
+              <div class="card-grid">
+                <div class="card stat">
+                  <label>Course
+                    <input id="statCourse" name="course" type="text" placeholder="Example: Waialae" required>
+                  </label>
+                  <p>Course played for this round.</p>
+                </div>
+                <div class="card stat">
+                  <label>Par
+                    <input id="statPar" name="par" type="number" min="27" max="80" value="72" required>
+                  </label>
+                  <p>Used to calculate the player's LGH handicap.</p>
+                </div>
+                <div class="card stat">
+                  <label>Fairways Hit
+                    <input id="statFairway" name="fairway" type="number" min="0" max="14" placeholder="Example: 8" required>
+                  </label>
+                  <p>Fairways hit out of 14.</p>
+                  <div class="meter"><span id="meterFairway" style="--value: 57%;"></span></div>
+                </div>
+                <div class="card stat">
+                  <label>GIR Hit
+                    <input id="statGir" name="gir" type="number" min="0" max="18" placeholder="Example: 10" required>
+                  </label>
+                  <p>Greens in regulation out of 18.</p>
+                  <div class="meter"><span id="meterGir" style="--value: 56%;"></span></div>
+                </div>
+                <div class="card stat">
+                  <label>Total Putts
+                    <input id="statPutts" name="putts" type="number" min="0" max="99" placeholder="Example: 32" required>
+                  </label>
+                  <p>Total putts for the round.</p>
+                  <div class="meter"><span id="meterPutts" style="--value: 68%;"></span></div>
+                </div>
+                <div class="card stat">
+                  <label>Total Score
+                    <input id="statTotalScore" name="totalScore" type="number" min="1" max="200" placeholder="Example: 82" required>
+                  </label>
+                  <p>Total score for the round.</p>
+                </div>
+                <div class="card stat">
+                  <label>LGH Handicap
+                    <input id="statHandicap" name="handicap" type="text" readonly>
+                  </label>
+                  <p>Auto-calculated from saved rounds.</p>
+                </div>
+              </div>
+              <p style="margin: 12px 0 0;">
+                <button class="primary" type="submit">Save Round</button>
+              </p>
+            </form>
+            <div class="card" style="margin-top: 12px;">
+              <strong>Saved Rounds</strong>
+              <p id="roundSummary">Save a round to start calculating handicap.</p>
+              <div class="round-list" id="roundHistory"></div>
+            </div>
+          </section>
+
+          <section class="panel" id="clubs">
+            <div class="panel-head">
+              <div>
+                <h2>Club Distances</h2>
+                <p>Track each club's carry distance and total distance.</p>
+              </div>
+            </div>
+            <form id="clubsForm">
+              <div class="card">
+                <div class="club-distance-list" id="clubDistanceList"></div>
+              </div>
+              <p style="margin: 12px 0 0;">
+                <button class="primary" type="submit">Save Club Distances</button>
+              </p>
+            </form>
+          </section>
+
+          <section class="panel" id="notes">
+            <div class="panel-head">
+              <div>
+                <h2>Coach Notes</h2>
+                <p>Private notes for the selected player.</p>
+              </div>
+            </div>
+            <form id="notesForm">
+              <div class="card">
+                <label>Notes to Coach
+                  <textarea id="coachNotes" name="notes" placeholder="Example: Work on driver tempo, pre-shot routine, and putting speed."></textarea>
+                </label>
+              </div>
+              <p style="margin: 12px 0 0;">
+                <button class="primary" type="submit">Save Notes</button>
+              </p>
+            </form>
+          </section>
+
+          <section class="panel" id="faq">
+            <div class="panel-head">
+              <div>
+                <h2>FAQ</h2>
+                <p>Quick answers for lesson day.</p>
+              </div>
+            </div>
+            <div class="faq-grid">
+              <div class="card faq-item">
+                <strong>Are range balls included?</strong>
+                <p>No. Range balls must be purchased separately at the range.</p>
+              </div>
+              <div class="card faq-item">
+                <strong>What if I don't have clubs?</strong>
+                <p>I can provide clubs.</p>
+              </div>
+              <div class="card faq-item">
+                <strong>How long is each lesson?</strong>
+                <p>Each lesson is one hour.</p>
+              </div>
+              <div class="card faq-item">
+                <strong>Do you only teach at Bay View?</strong>
+                <p>Yes, adult lessons are taught at Bay View. I also offer a junior class at 360 Ewa Beach Golf Course.</p>
+              </div>
+              <div class="card faq-item">
+                <strong>Do you offer short game lessons?</strong>
+                <p>Yes. Short game lessons are available.</p>
+              </div>
+              <div class="card faq-item">
+                <strong>Where on the range should we meet?</strong>
+                <p>I'm normally at stalls 1-2, but I'll text you about an hour before the lesson to confirm.</p>
+              </div>
+              <div class="card faq-item">
+                <strong>Do you offer video analysis?</strong>
+                <p>Yes, video analysis is available.</p>
+              </div>
+            </div>
+          </section>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://fklkwrmljubzicvwykkw.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_33rnFsYpFpVHLPVMJcwN3A_pKcnqfeU";
+    const STORE_KEY = "lgh_player_hub_profiles";
+    const tabs = Array.from(document.querySelectorAll(".tab"));
+    const authTabs = Array.from(document.querySelectorAll(".auth-tab"));
+    const panels = Array.from(document.querySelectorAll(".panel"));
+    const playerList = document.getElementById("playerList");
+    const toast = document.getElementById("toast");
+    const cloudStatus = document.getElementById("cloudStatus");
+    const modeBadge = document.getElementById("modeBadge");
+    const sidebarTitle = document.getElementById("sidebarTitle");
+    const sidebarNote = document.getElementById("sidebarNote");
+    const playerForm = document.getElementById("playerForm");
+    const playerSubmitButton = document.getElementById("playerSubmitButton");
+    const welcomeText = document.getElementById("welcomeText");
+    const lessonTotalLabel = document.getElementById("lessonTotalLabel");
+    const resetPasswordForm = document.getElementById("resetPasswordForm");
+    const supabaseClient = createSupabaseClient();
+    const CLUBS = ["Driver", "3 Wood", "5 Wood", "Hybrid", "4 Iron", "5 Iron", "6 Iron", "7 Iron", "8 Iron", "9 Iron", "PW", "GW", "SW", "LW"];
+
+    let players = loadPlayers();
+    let selectedId = players[0]?.id || null;
+    let currentUser = null;
+    let currentRole = "player";
+    let isPasswordRecovery = false;
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const id = tab.dataset.tab;
+        tabs.forEach((item) => item.classList.toggle("active", item === tab));
+        panels.forEach((panel) => panel.classList.toggle("active", panel.id === id));
+      });
+    });
+
+    authTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        setAuthMode(tab.dataset.authTab);
+      });
+    });
+
+    playerForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const player = {
+        id: crypto.randomUUID(),
+        ownerId: currentUser?.id ?? null,
+        name: form.get("name").trim(),
+        age: form.get("age"),
+        skill: form.get("skill"),
+        handicap: normalizeHandicap(form.get("handicap")),
+        contact: form.get("contact").trim(),
+        lessons: {
+          total: clamp(Number(form.get("lessonTotal")), 1, 100),
+          used: 0
+        },
+        notes: "",
+        stats: createStats(players.length),
+        clubDistances: createClubDistances(),
+        bookedLessons: [],
+        approvalStatus: currentRole === "coach" ? "approved" : "pending"
+      };
+      players.unshift(player);
+      selectedId = player.id;
+      savePlayers();
+      event.currentTarget.reset();
+      render();
+      showToast(currentRole === "coach" ? "Player profile added." : "Profile created.");
+    });
+
+    document.getElementById("authForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!supabaseClient) {
+        showToast("Add your Supabase URL and anon key first.");
+        return;
+      }
+
+      const action = event.submitter?.dataset.authAction;
+      const form = new FormData(event.currentTarget);
+      const email = form.get("email").trim();
+      const password = form.get("password");
+      if (!email || !password) {
+        showToast("Enter email and password.");
+        return;
+      }
+
+      const response = action === "signup"
+        ? await supabaseClient.auth.signUp({ email, password })
+        : await supabaseClient.auth.signInWithPassword({ email, password });
+
+      if (response.error) {
+        const friendlyError = formatAuthError(response.error.message);
+        updateCloudStatus(friendlyError);
+        showToast(friendlyError);
+        return;
+      }
+
+      if (action === "signup" && !response.data.session) {
+        currentUser = null;
+        currentRole = "player";
+        updateCloudStatus("Account created. Check that student's email to confirm the login, then sign in.");
+        render();
+        showToast("Confirm the student email before signing in.");
+        return;
+      }
+
+      currentUser = response.data.user;
+      await loadCurrentRole();
+      players = [];
+      selectedId = null;
+      localStorage.removeItem(STORE_KEY);
+      updateCloudStatus();
+      render();
+      await loadCloudPlayers();
+      showToast(action === "signup" ? "Login created." : "Signed in.");
+    });
+
+    document.getElementById("forgotPassword").addEventListener("click", async () => {
+      if (!supabaseClient) {
+        showToast("Password reset is not connected yet.");
+        return;
+      }
+
+      const email = new FormData(document.getElementById("authForm")).get("email").trim();
+      if (!email) {
+        updateCloudStatus("Enter your email first, then press Forgot Password.");
+        showToast("Enter your email first.");
+        return;
+      }
+
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: `${new URL(".", window.location.href).href}?reset=password`
+      });
+
+      if (error) {
+        const message = formatAuthError(error.message);
+        updateCloudStatus(message);
+        showToast(message);
+        return;
+      }
+
+      updateCloudStatus("Password reset email sent. Check your inbox.");
+      showToast("Password reset email sent.");
+    });
+
+    resetPasswordForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!supabaseClient) return;
+
+      const password = new FormData(event.currentTarget).get("newPassword");
+      if (!password || password.length < 6) {
+        showToast("Use at least 6 characters.");
+        return;
+      }
+
+      const { error } = await supabaseClient.auth.updateUser({ password });
+      if (error) {
+        const message = formatAuthError(error.message);
+        updateCloudStatus(message);
+        showToast(message);
+        return;
+      }
+
+      resetPasswordForm.classList.add("hidden");
+      document.getElementById("authForm").classList.remove("hidden");
+      isPasswordRecovery = false;
+      await supabaseClient.auth.signOut();
+      currentUser = null;
+      currentRole = "player";
+      updateCloudStatus("Password updated. You can sign in with the new password.");
+      showToast("Password updated.");
+    });
+
+    document.getElementById("statsForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const selected = players.find((player) => player.id === selectedId);
+      if (!selected) return;
+
+      const form = new FormData(event.currentTarget);
+      const round = {
+        id: crypto.randomUUID(),
+        date: new Date().toISOString(),
+        course: form.get("course").trim(),
+        par: clamp(Number(form.get("par")), 27, 80),
+        fairway: clamp(Number(form.get("fairway")), 0, 14),
+        gir: clamp(Number(form.get("gir")), 0, 18),
+        putts: clamp(Number(form.get("putts")), 0, 99),
+        totalScore: clamp(Number(form.get("totalScore")), 1, 200)
+      };
+      selected.stats = round;
+      selected.rounds = [round, ...normalizeRounds(selected.rounds)].slice(0, 20);
+      selected.handicap = calculateHandicap(selected.rounds);
+
+      savePlayers();
+      render();
+      showToast("Round saved. Handicap updated.");
+    });
+
+    document.getElementById("notesForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const selected = players.find((player) => player.id === selectedId);
+      if (!selected) return;
+
+      const form = new FormData(event.currentTarget);
+      selected.notes = form.get("notes").trim();
+      savePlayers();
+      render();
+      showToast("Coach notes saved.");
+    });
+
+    document.getElementById("clubsForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const selected = players.find((player) => player.id === selectedId);
+      if (!selected) return;
+
+      const form = new FormData(event.currentTarget);
+      selected.clubDistances = CLUBS.map((club) => ({
+        club,
+        carry: clamp(Number(form.get(`${club}-carry`)), 0, 400),
+        total: clamp(Number(form.get(`${club}-total`)), 0, 450)
+      }));
+
+      savePlayers();
+      render();
+      showToast("Club distances saved.");
+    });
+
+    document.getElementById("recordLesson").addEventListener("click", () => {
+      const selected = players.find((player) => player.id === selectedId);
+      if (!selected) return;
+
+      selected.lessons = normalizeLessons(selected.lessons);
+      if (selected.lessons.used >= selected.lessons.total) {
+        showToast("Lesson package is complete.");
+        return;
+      }
+
+      selected.lessons.used += 1;
+      selected.bookedLessons = [
+        {
+          id: crypto.randomUUID(),
+          date: new Date().toISOString(),
+          status: "scheduled",
+          source: "Manual"
+        },
+        ...normalizeBookedLessons(selected.bookedLessons)
+      ];
+      savePlayers();
+      render();
+      showToast(`Lesson ${selected.lessons.used} of ${selected.lessons.total} recorded.`);
+    });
+
+    document.getElementById("enableNotifications").addEventListener("click", async () => {
+      if (!("Notification" in window)) {
+        showToast("Notifications are not supported in this browser.");
+        updateNotificationStatus();
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+      updateNotificationStatus();
+      showToast(permission === "granted" ? "Push notifications enabled." : "Notifications not enabled.");
+    });
+
+    document.getElementById("sendTestNotification").addEventListener("click", () => {
+      const selected = players.find((player) => player.id === selectedId);
+      if (!selected) return;
+
+      if (!("Notification" in window) || Notification.permission !== "granted") {
+        showToast("Enable notifications first.");
+        updateNotificationStatus();
+        return;
+      }
+
+      selected.lessons = normalizeLessons(selected.lessons);
+      new Notification("LetsGolfHawaii Lesson Reminder", {
+        body: buildReminderMessage(selected)
+      });
+    });
+
+    document.getElementById("copyInstagramMessage").addEventListener("click", async () => {
+      const message = document.getElementById("instagramMessage").value;
+      try {
+        await navigator.clipboard.writeText(message);
+        showToast("Instagram message copied.");
+      } catch {
+        document.getElementById("instagramMessage").select();
+        showToast("Select and copy the Instagram message.");
+      }
+    });
+
+    document.getElementById("syncCloud").addEventListener("click", async () => {
+      await saveCloudPlayers();
+    });
+
+    document.getElementById("connectStudentButton").addEventListener("click", async () => {
+      await connectStudentLogin();
+    });
+
+    document.getElementById("approveProfileButton").addEventListener("click", () => {
+      const selected = players.find((player) => player.id === selectedId);
+      if (!selected || currentRole !== "coach") return;
+      selected.approvalStatus = "approved";
+      savePlayers();
+      render();
+      showToast(`${selected.name} profile approved.`);
+    });
+
+    document.getElementById("signOut").addEventListener("click", async () => {
+      if (!supabaseClient) return;
+      await supabaseClient.auth.signOut();
+      currentUser = null;
+      currentRole = "player";
+      players = loadPlayers();
+      selectedId = players[0]?.id || null;
+      updateCloudStatus();
+      render();
+      showToast("Signed out.");
+    });
+
+    playerList.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-player-id]");
+      if (!button) return;
+      selectedId = button.dataset.playerId;
+      render();
+    });
+
+    function loadPlayers() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(STORE_KEY));
+        if (Array.isArray(stored) && stored.length) return stored;
+      } catch {}
+      return [
+        {
+          id: crypto.randomUUID(),
+          name: "Sample Player",
+          age: "15",
+          skill: "Intermediate",
+          handicap: 18.5,
+          contact: "sample@email.com",
+          lessons: { total: 10, used: 0 },
+          notes: "Sample note: review setup alignment and wedge distance control.",
+          approvalStatus: "approved",
+          stats: { course: "Waialae", par: 72, fairway: 8, gir: 10, putts: 32, totalScore: 82 },
+          clubDistances: createClubDistances(),
+          bookedLessons: [],
+          rounds: [
+            { id: crypto.randomUUID(), date: new Date().toISOString(), course: "Waialae", par: 72, fairway: 8, gir: 10, putts: 32, totalScore: 82 }
+          ]
+        }
+      ];
+    }
+
+    function savePlayers() {
+      localStorage.setItem(STORE_KEY, JSON.stringify(players));
+      void saveCloudPlayers({ quiet: true });
+    }
+
+    function createStats(offset) {
+      return {
+        course: "",
+        par: 72,
+        fairway: Math.min(14, 7 + offset),
+        gir: Math.min(18, 9 + offset),
+        putts: Math.max(24, 34 - offset),
+        totalScore: Math.max(68, 88 - offset * 2)
+      };
+    }
+
+    function createClubDistances() {
+      const defaults = {
+        "Driver": [220, 240],
+        "3 Wood": [205, 220],
+        "5 Wood": [190, 205],
+        "Hybrid": [180, 190],
+        "4 Iron": [170, 180],
+        "5 Iron": [160, 170],
+        "6 Iron": [150, 160],
+        "7 Iron": [140, 150],
+        "8 Iron": [130, 138],
+        "9 Iron": [120, 126],
+        "PW": [110, 115],
+        "GW": [100, 104],
+        "SW": [85, 88],
+        "LW": [65, 68]
+      };
+      return CLUBS.map((club) => ({
+        club,
+        carry: defaults[club]?.[0] ?? 0,
+        total: defaults[club]?.[1] ?? 0
+      }));
+    }
+
+    function render() {
+      const selected = players.find((player) => player.id === selectedId) || players[0];
+      selectedId = selected?.id || null;
+      updateViewMode(selected);
+
+      playerList.innerHTML = players.map((player) => `
+        <button class="player-button ${player.id === selectedId ? "active" : ""}" type="button" data-player-id="${escapeHtml(player.id)}">
+          <strong>${escapeHtml(player.name)}</strong>
+          <span>${escapeHtml(player.skill)} - Age ${escapeHtml(player.age)}${normalizeApprovalStatus(player.approvalStatus) === "pending" ? " - Pending" : ""}</span>
+        </button>
+      `).join("");
+
+      if (!selected) {
+        renderEmptyState();
+        return;
+      }
+
+      selected.rounds = normalizeRounds(selected.rounds);
+      if (selected.rounds.length) selected.handicap = calculateHandicap(selected.rounds);
+      document.getElementById("profileName").textContent = selected.name;
+      document.getElementById("profileSummary").textContent = `${selected.skill} player profile`;
+      document.getElementById("profileAge").textContent = selected.age;
+      document.getElementById("profileSkill").textContent = selected.skill;
+      document.getElementById("profileHandicap").textContent = formatHandicap(selected.handicap);
+      document.getElementById("profileContact").textContent = selected.contact;
+      document.getElementById("bookingPlayer").textContent = `Booking for ${selected.name}`;
+      document.getElementById("coachNotes").value = selected.notes ?? "";
+      document.getElementById("accessCardTitle").textContent = currentRole === "coach" ? "Coach View" : "Student View";
+      document.getElementById("accessCardText").textContent = currentRole === "coach"
+        ? "You can view and manage all saved player profiles."
+        : normalizeApprovalStatus(selected.approvalStatus) === "pending"
+          ? "Your profile was sent to your coach for approval."
+          : "You can view your own profile, stats, lessons, booking, and FAQ.";
+      updateApprovalStatus(selected);
+      document.getElementById("studentLoginEmail").value = selected.studentEmail ?? "";
+      document.getElementById("studentLoginStatus").textContent = selected.studentEmail
+        ? `Connected to ${selected.studentEmail}.`
+        : "No student login connected yet.";
+
+      selected.lessons = normalizeLessons(selected.lessons);
+      updateLessonTracker(selected);
+      updateNotificationStatus();
+      updateInstagramMessage(selected);
+
+      const course = selected.stats?.course ?? "";
+      const par = selected.stats?.par ?? 72;
+      const fairway = normalizeFairway(selected.stats?.fairway ?? selected.stats?.driving ?? 8);
+      const gir = normalizeGir(selected.stats?.gir ?? 10);
+      const putts = selected.stats?.putts ?? 32;
+      const totalScore = selected.stats?.totalScore ?? 82;
+      updateStats(course, par, fairway, gir, putts, totalScore, selected.handicap);
+      updateRoundHistory(selected);
+      updateClubDistances(selected);
+      updateBookedLessons(selected);
+      updateDashboard(selected);
+    }
+
+    function renderEmptyState() {
+      const isCoach = currentRole === "coach";
+      document.getElementById("profileName").textContent = isCoach ? "No Players Yet" : "No Player Profile Yet";
+      document.getElementById("profileSummary").textContent = isCoach
+        ? "Add or save a player profile to get started."
+        : "Create a profile or ask your coach to connect one to your login.";
+      document.getElementById("profileAge").textContent = "-";
+      document.getElementById("profileSkill").textContent = "-";
+      document.getElementById("profileHandicap").textContent = "-";
+      document.getElementById("profileContact").textContent = "-";
+      document.getElementById("bookingPlayer").textContent = "No player selected";
+      document.getElementById("coachNotes").value = "";
+      document.getElementById("accessCardTitle").textContent = isCoach ? "Coach View" : "Student View";
+      document.getElementById("accessCardText").textContent = isCoach
+        ? "Add a player profile to begin managing students."
+        : "This student login is active, but no player profile is connected yet.";
+      updateApprovalStatus(null);
+      document.getElementById("studentLoginEmail").value = "";
+      document.getElementById("studentLoginStatus").textContent = "No player selected.";
+      updateStats("", 72, 0, 0, 0, 1, "");
+      updateRoundHistory(null);
+      updateClubDistances(null);
+      updateBookedLessons(null);
+      updateDashboard(null);
+      updateNotificationStatus();
+      document.getElementById("instagramMessage").value = "";
+      document.getElementById("lessonProgress").textContent = "No lesson package selected.";
+      document.getElementById("lessonMeter").style.setProperty("--value", "0%");
+      document.getElementById("recordLesson").disabled = true;
+      document.getElementById("lessonReminder").textContent = isCoach
+        ? "Add a player to track lessons."
+        : "Ask your coach to connect your profile.";
+    }
+
+    function setAuthMode(mode) {
+      const nextMode = mode === "create" ? "create" : "login";
+      document.body.classList.toggle("login-mode", nextMode === "login");
+      document.body.classList.toggle("create-mode", nextMode === "create");
+      authTabs.forEach((tab) => {
+        tab.classList.toggle("active", tab.dataset.authTab === nextMode);
+      });
+      if (!currentUser) {
+        sidebarTitle.textContent = nextMode === "create" ? "Create Profile" : "Welcome Back";
+        playerSubmitButton.textContent = "Create Profile";
+      }
+    }
+
+    function updateViewMode(selected) {
+      const isCoach = currentRole === "coach";
+      const isSignedIn = Boolean(currentUser);
+
+      document.body.classList.toggle("logged-out", !isSignedIn);
+      document.body.classList.toggle("logged-in", isSignedIn);
+      if (!isSignedIn) {
+        setAuthMode(document.body.classList.contains("create-mode") ? "create" : "login");
+      }
+
+      modeBadge.textContent = isCoach ? "Coach View" : isSignedIn ? "Student View" : "Local Preview";
+      sidebarTitle.textContent = isCoach ? "All Players" : "My Profile";
+      sidebarNote.textContent = isCoach
+        ? "Review new profiles, approve students, and manage player progress."
+        : selected
+          ? normalizeApprovalStatus(selected.approvalStatus) === "pending"
+            ? "Your profile is waiting for coach approval."
+            : "View your profile and keep your stats connected."
+          : "Create your player profile and your coach will approve it.";
+      welcomeText.textContent = isCoach
+        ? "Review pending profiles, approve new students, and keep each player updated."
+        : selected
+          ? normalizeApprovalStatus(selected.approvalStatus) === "pending"
+            ? "Your profile is saved. Coach Andrew will review and approve it."
+            : "Your profile is approved. You can book lessons, track stats, and update distances."
+          : "Create your login, fill out this profile once, then press Save Profile.";
+      playerSubmitButton.textContent = isCoach || !isSignedIn ? "Add Player" : selected ? "Add Another Profile" : "Create My Profile";
+      if (!isSignedIn) {
+        const authMode = document.body.classList.contains("create-mode") ? "create" : "login";
+        sidebarTitle.textContent = authMode === "create" ? "Create Profile" : "Welcome Back";
+        playerSubmitButton.textContent = "Create Profile";
+      }
+      lessonTotalLabel.classList.toggle("hidden", !isCoach && isSignedIn);
+      playerForm.classList.toggle("hidden", !isCoach && isSignedIn && Boolean(selected));
+      playerList.classList.toggle("hidden", !isCoach && players.length <= 1);
+      document.getElementById("recordLesson").classList.toggle("hidden", !isCoach);
+      document.getElementById("remindersCard").classList.toggle("hidden", !isCoach);
+      document.getElementById("connectStudentCard").classList.toggle("hidden", !isCoach);
+      document.getElementById("approvalCard").classList.toggle("hidden", !isCoach && !selected);
+    }
+
+    function updateStats(course, par, fairway, gir, putts, totalScore, handicap) {
+      document.getElementById("statCourse").value = course;
+      document.getElementById("statPar").value = par;
+      document.getElementById("statFairway").value = fairway;
+      document.getElementById("meterFairway").style.setProperty("--value", `${Math.round((fairway / 14) * 100)}%`);
+      document.getElementById("statGir").value = gir;
+      document.getElementById("meterGir").style.setProperty("--value", `${Math.round((gir / 18) * 100)}%`);
+      document.getElementById("statPutts").value = putts;
+      document.getElementById("meterPutts").style.setProperty("--value", `${Math.max(0, Math.min(100, 100 - putts))}%`);
+      document.getElementById("statTotalScore").value = totalScore;
+      document.getElementById("statHandicap").value = formatHandicap(handicap);
+    }
+
+    function updateRoundHistory(player) {
+      const rounds = normalizeRounds(player?.rounds);
+      const summary = document.getElementById("roundSummary");
+      const history = document.getElementById("roundHistory");
+      if (!rounds.length) {
+        summary.textContent = "Save a round to start calculating handicap.";
+        history.innerHTML = "";
+        return;
+      }
+
+      summary.textContent = `${rounds.length} saved round${rounds.length === 1 ? "" : "s"}. Handicap uses the best recent score-over-par rounds.`;
+      history.innerHTML = rounds.slice(0, 8).map((round) => {
+        const differential = formatSigned(round.totalScore - round.par);
+        return `
+          <div class="round-row">
+            <div>
+              <strong>${escapeHtml(round.course || "Course")}</strong>
+              <span>${escapeHtml(formatRoundDate(round.date))} - Score ${escapeHtml(round.totalScore)} on par ${escapeHtml(round.par)}</span>
+            </div>
+            <strong>${escapeHtml(differential)}</strong>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function updateBookedLessons(player) {
+      const lessons = normalizeBookedLessons(player?.bookedLessons);
+      const summary = document.getElementById("bookedLessonsSummary");
+      const list = document.getElementById("bookedLessonsList");
+      if (!lessons.length) {
+        summary.textContent = "No booked lessons yet.";
+        list.innerHTML = "";
+        return;
+      }
+
+      const scheduled = lessons.filter((lesson) => lesson.status !== "canceled");
+      summary.textContent = `${scheduled.length} booked lesson${scheduled.length === 1 ? "" : "s"} listed.`;
+      list.innerHTML = lessons.slice(0, 10).map((lesson, index) => `
+        <div class="lesson-row">
+          <div>
+            <strong>Lesson ${escapeHtml(index + 1)}</strong>
+            <span>${escapeHtml(formatLessonDate(lesson.date))} - ${escapeHtml(lesson.source || "Booking")} - ${escapeHtml(formatLessonStatus(lesson.status))}</span>
+          </div>
+          <strong>${escapeHtml(lesson.status === "canceled" ? "Canceled" : "Booked")}</strong>
+        </div>
+      `).join("");
+    }
+
+    function updateDashboard(player) {
+      const isCoach = currentRole === "coach";
+      if (!player) {
+        document.getElementById("dashboardTitle").textContent = isCoach ? "Coach Dashboard" : "Player Dashboard";
+        document.getElementById("dashboardSubtitle").textContent = isCoach ? "Add or approve a player to get started." : "Create your profile to get started.";
+        document.getElementById("dashboardLessonText").textContent = "No player selected.";
+        document.getElementById("dashboardLessonsRemaining").textContent = "-";
+        document.getElementById("dashboardHandicap").textContent = "-";
+        document.getElementById("dashboardBookingText").textContent = "No booked lessons yet.";
+        document.getElementById("dashboardApprovalText").textContent = "No profile selected.";
+        document.getElementById("dashboardStatus").textContent = "-";
+        document.getElementById("dashboardRoundText").textContent = "Save a round to show recent scoring.";
+        document.getElementById("dashboardScore").textContent = "-";
+        document.getElementById("dashboardNoteText").textContent = "No coach note yet.";
+        return;
+      }
+
+      const lessons = normalizeLessons(player.lessons);
+      const remaining = lessons.total - lessons.used;
+      const booked = normalizeBookedLessons(player.bookedLessons);
+      const latestLesson = booked[0];
+      const rounds = normalizeRounds(player.rounds);
+      const latestRound = rounds[0];
+      const status = normalizeApprovalStatus(player.approvalStatus);
+
+      document.getElementById("dashboardTitle").textContent = isCoach ? `${player.name} Dashboard` : "My Dashboard";
+      document.getElementById("dashboardSubtitle").textContent = isCoach
+        ? "Review this player's lesson package and progress."
+        : "Your lessons, scores, and next step in one place.";
+      document.getElementById("dashboardLessonText").textContent = `${lessons.used} of ${lessons.total} lessons used.`;
+      document.getElementById("dashboardLessonsRemaining").textContent = remaining;
+      document.getElementById("dashboardHandicap").textContent = formatHandicap(player.handicap);
+      document.getElementById("dashboardBookingText").textContent = latestLesson
+        ? `${formatLessonDate(latestLesson.date)} - ${formatLessonStatus(latestLesson.status)}`
+        : "No booked lessons yet.";
+      document.getElementById("dashboardApprovalText").textContent = status === "pending"
+        ? "Waiting for coach approval."
+        : "Profile approved.";
+      document.getElementById("dashboardStatus").textContent = status === "pending" ? "Pending" : "Approved";
+      document.getElementById("dashboardRoundText").textContent = latestRound
+        ? `${latestRound.course || "Course"} - ${formatRoundDate(latestRound.date)}`
+        : "Save a round to show recent scoring.";
+      document.getElementById("dashboardScore").textContent = latestRound ? latestRound.totalScore : "-";
+      document.getElementById("dashboardNoteText").textContent = player.notes || "No coach note yet.";
+    }
+
+    function normalizeBookedLessons(lessons) {
+      if (!Array.isArray(lessons)) return [];
+      return lessons
+        .map((lesson) => ({
+          id: lesson.id || crypto.randomUUID(),
+          date: lesson.date || lesson.scheduled_start || lesson.created_at || new Date().toISOString(),
+          status: lesson.status === "canceled" ? "canceled" : "scheduled",
+          source: lesson.source || "Calendly"
+        }))
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+
+    function formatLessonStatus(status) {
+      return status === "canceled" ? "Canceled" : "Booked";
+    }
+
+    function formatLessonDate(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "Lesson date";
+      return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    function updateClubDistances(player) {
+      const distances = normalizeClubDistances(player?.clubDistances);
+      document.getElementById("clubDistanceList").innerHTML = distances.map((item) => `
+        <div class="club-distance-row">
+          <div class="club-name">${escapeHtml(item.club)}</div>
+          <label>Carry
+            <input name="${escapeHtml(item.club)}-carry" type="number" min="0" max="400" value="${escapeHtml(item.carry)}" placeholder="Carry">
+          </label>
+          <label>Total
+            <input name="${escapeHtml(item.club)}-total" type="number" min="0" max="450" value="${escapeHtml(item.total)}" placeholder="Total">
+          </label>
+        </div>
+      `).join("");
+    }
+
+    function normalizeClubDistances(distances) {
+      const byClub = new Map(Array.isArray(distances)
+        ? distances.map((item) => [item.club, item])
+        : []);
+      return CLUBS.map((club) => {
+        const saved = byClub.get(club) ?? {};
+        return {
+          club,
+          carry: clamp(Number(saved.carry ?? 0), 0, 400),
+          total: clamp(Number(saved.total ?? 0), 0, 450)
+        };
+      });
+    }
+
+    function updateApprovalStatus(player) {
+      const status = normalizeApprovalStatus(player?.approvalStatus);
+      const isPending = status === "pending";
+      document.getElementById("approvalStatusText").textContent = !player
+        ? "No profile selected."
+        : isPending
+          ? "Pending approval. Review this profile, then approve it when ready."
+          : "Approved profile.";
+      document.getElementById("approveProfileButton").disabled = !player || !isPending || currentRole !== "coach";
+    }
+
+    function normalizeApprovalStatus(status) {
+      return status === "pending" ? "pending" : "approved";
+    }
+
+    function normalizeHandicap(value) {
+      if (value === null || value === undefined || value === "") return "";
+      return Math.round(clamp(Number(value), -10, 54) * 10) / 10;
+    }
+
+    function formatHandicap(value) {
+      const handicap = normalizeHandicap(value);
+      return handicap === "" ? "Not set" : handicap.toFixed(1);
+    }
+
+    function normalizeRounds(rounds) {
+      if (!Array.isArray(rounds)) return [];
+      return rounds
+        .map((round) => ({
+          id: round.id || crypto.randomUUID(),
+          date: round.date || new Date().toISOString(),
+          course: round.course ?? "",
+          par: clamp(Number(round.par ?? 72), 27, 80),
+          fairway: clamp(Number(round.fairway ?? 0), 0, 14),
+          gir: clamp(Number(round.gir ?? 0), 0, 18),
+          putts: clamp(Number(round.putts ?? 0), 0, 99),
+          totalScore: clamp(Number(round.totalScore ?? round.total_score ?? 0), 1, 200)
+        }))
+        .filter((round) => round.totalScore > 1);
+    }
+
+    function calculateHandicap(rounds) {
+      const differentials = normalizeRounds(rounds)
+        .map((round) => round.totalScore - round.par)
+        .sort((a, b) => a - b);
+      if (!differentials.length) return "";
+
+      const count = differentials.length;
+      const bestCount = count >= 19 ? 8
+        : count >= 17 ? 7
+        : count >= 15 ? 6
+        : count >= 12 ? 5
+        : count >= 9 ? 4
+        : count >= 6 ? 3
+        : count >= 3 ? 2
+        : 1;
+      const best = differentials.slice(0, bestCount);
+      const average = best.reduce((total, value) => total + value, 0) / best.length;
+      return normalizeHandicap(average);
+    }
+
+    function formatSigned(value) {
+      return value > 0 ? `+${value}` : String(value);
+    }
+
+    function formatRoundDate(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "Saved round";
+      return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    function normalizeLessons(lessons) {
+      const total = clamp(Number(lessons?.total ?? 10), 1, 100);
+      const used = clamp(Number(lessons?.used ?? 0), 0, total);
+      return { total, used };
+    }
+
+    function updateLessonTracker(player) {
+      const { total, used } = player.lessons;
+      const remaining = total - used;
+      const percent = Math.round((used / total) * 100);
+      const progressText = `${used} of ${total} lessons scheduled. ${remaining} remaining.`;
+
+      document.getElementById("lessonProgress").textContent = progressText;
+      document.getElementById("lessonMeter").style.setProperty("--value", `${percent}%`);
+      document.getElementById("recordLesson").disabled = used >= total;
+      document.getElementById("lessonReminder").textContent = remaining > 0
+        ? `${remaining} lesson${remaining === 1 ? "" : "s"} remaining. Cancellations update after Calendly auto-tracking is connected.`
+        : "Lesson package complete.";
+    }
+
+    function updateNotificationStatus() {
+      const status = document.getElementById("notificationStatus");
+      if (!("Notification" in window)) {
+        status.textContent = "Browser notifications are not supported here.";
+        return;
+      }
+      if (Notification.permission === "granted") {
+        status.textContent = "Browser notifications are enabled for this device.";
+      } else if (Notification.permission === "denied") {
+        status.textContent = "Browser notifications are blocked. Change browser settings to enable them.";
+      } else {
+        status.textContent = "Browser notifications are not enabled yet.";
+      }
+    }
+
+    function updateInstagramMessage(player) {
+      document.getElementById("instagramMessage").value = buildReminderMessage(player);
+    }
+
+    function buildReminderMessage(player) {
+      const lessons = normalizeLessons(player.lessons);
+      const remaining = lessons.total - lessons.used;
+      return `Hi ${player.name}, this is LetsGolfHawaii. You are at lesson ${lessons.used} of ${lessons.total}, with ${remaining} remaining. Book your next lesson here: https://calendly.com/andrew-ka-ne-golf`;
+    }
+
+    function normalizeFairway(value) {
+      return value > 14 ? Math.round((value / 100) * 14) : value;
+    }
+
+    function normalizeGir(value) {
+      return value > 18 ? Math.round((value / 100) * 18) : value;
+    }
+
+    function clamp(value, min, max) {
+      if (Number.isNaN(value)) return min;
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function createSupabaseClient() {
+      if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !window.supabase) {
+        return null;
+      }
+      return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: {
+          detectSessionInUrl: false
+        }
+      });
+    }
+
+    async function initCloud() {
+      if (!supabaseClient) {
+        updateCloudStatus();
+        return;
+      }
+
+      supabaseClient.auth.onAuthStateChange((event, session) => {
+        currentUser = session?.user ?? null;
+        if (event === "PASSWORD_RECOVERY") {
+          showPasswordResetForm();
+          return;
+        }
+        if (isPasswordRecovery) return;
+        void loadCurrentRole().then(() => {
+          updateCloudStatus();
+          render();
+        });
+      });
+
+      const recoveryMode = await setupPasswordRecoveryView();
+      const { data } = await supabaseClient.auth.getSession();
+      currentUser = data.session?.user ?? null;
+      await loadCurrentRole();
+      if (recoveryMode) {
+        updateCloudStatus("Enter a new password below.");
+        return;
+      }
+      updateCloudStatus();
+      if (currentUser) await loadCloudPlayers();
+    }
+
+    function showPasswordResetForm() {
+      isPasswordRecovery = true;
+      document.getElementById("authForm").classList.add("hidden");
+      resetPasswordForm.classList.remove("hidden");
+      updateCloudStatus("Enter a new password below.");
+    }
+
+    async function setupPasswordRecoveryView() {
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      const query = new URLSearchParams(window.location.search);
+      const code = query.get("code");
+      const accessToken = hash.get("access_token") || query.get("access_token");
+      const refreshToken = hash.get("refresh_token") || query.get("refresh_token");
+      const isRecovery = hash.get("type") === "recovery"
+        || query.get("type") === "recovery"
+        || query.get("reset") === "password"
+        || Boolean(code);
+      if (!isRecovery) return false;
+
+      showPasswordResetForm();
+
+      if (code) {
+        const { error } = await supabaseClient.auth.exchangeCodeForSession(code);
+        if (error) {
+          const message = formatAuthError(error.message);
+          updateCloudStatus(message);
+          showToast(message);
+          return true;
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      if (accessToken && refreshToken) {
+        const { error } = await supabaseClient.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken
+        });
+        if (error) {
+          const message = formatAuthError(error.message);
+          updateCloudStatus(message);
+          showToast(message);
+          return true;
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      return true;
+    }
+
+    function updateCloudStatus(message) {
+      if (!supabaseClient) {
+        cloudStatus.textContent = "Local mode. Send me your Supabase Project URL and anon public key to turn cloud login on.";
+        return;
+      }
+      if (message) {
+        cloudStatus.textContent = message;
+        return;
+      }
+      cloudStatus.textContent = currentUser
+        ? `Signed in as ${currentUser.email}. ${currentRole === "coach" ? "Coach view is active." : "Student view is active."}`
+        : "Create a login or sign in to save your profile.";
+    }
+
+    function formatAuthError(message) {
+      if (message.toLowerCase().includes("email not confirmed")) {
+        return "That email needs to be confirmed before signing in.";
+      }
+      if (message.toLowerCase().includes("invalid login credentials")) {
+        return "Email or password did not match. Check the student login details.";
+      }
+      return message;
+    }
+
+    async function loadCurrentRole() {
+      currentRole = "player";
+      if (!supabaseClient || !currentUser) return;
+
+      const { data, error } = await supabaseClient
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+
+      if (!error && data?.role) {
+        currentRole = data.role;
+      }
+    }
+
+    async function loadCloudPlayers() {
+      if (!supabaseClient || !currentUser) return;
+
+      const { data, error } = await supabaseClient
+        .from("player_profiles")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        showToast(error.message);
+        return;
+      }
+
+      if (!data.length) {
+        const message = currentRole === "coach"
+          ? "No saved profiles yet. Press Save Profile to upload this device."
+          : "Signed in. Fill out your profile and press Save Profile.";
+        players = [];
+        selectedId = null;
+        localStorage.removeItem(STORE_KEY);
+        render();
+        updateCloudStatus(message);
+        showToast(message);
+        return;
+      }
+
+      players = data
+        .map(fromCloudProfile)
+        .filter((player) => currentRole === "coach" || player.ownerId === currentUser.id);
+      await loadCloudLessonBookings();
+      selectedId = players[0]?.id || null;
+      localStorage.setItem(STORE_KEY, JSON.stringify(players));
+      render();
+    }
+
+    async function loadCloudLessonBookings() {
+      if (!supabaseClient || !currentUser || !players.length) return;
+
+      const playerIds = players.map((player) => player.id);
+      const { data, error } = await supabaseClient
+        .from("lesson_bookings")
+        .select("player_profile_id, scheduled_start, created_at, status, event_type")
+        .in("player_profile_id", playerIds)
+        .order("scheduled_start", { ascending: false });
+
+      if (error || !Array.isArray(data)) return;
+
+      const byPlayer = new Map(players.map((player) => [player.id, []]));
+      data.forEach((booking) => {
+        if (!byPlayer.has(booking.player_profile_id)) return;
+        byPlayer.get(booking.player_profile_id).push({
+          id: `${booking.player_profile_id}-${booking.scheduled_start || booking.created_at}`,
+          date: booking.scheduled_start || booking.created_at,
+          status: booking.status,
+          source: "Calendly"
+        });
+      });
+
+      players = players.map((player) => ({
+        ...player,
+        bookedLessons: byPlayer.get(player.id)?.length
+          ? byPlayer.get(player.id)
+          : player.bookedLessons
+      }));
+    }
+
+    async function saveCloudPlayers(options = {}) {
+      if (!supabaseClient || !currentUser) return;
+
+      const rows = players.map((player) => toCloudProfile(player, currentUser.id));
+      const { error } = await supabaseClient
+        .from("player_profiles")
+        .upsert(rows, { onConflict: "id" });
+
+      if (error) {
+        const schemaMessage = error.message.toLowerCase();
+        if (schemaMessage.includes("handicap") || schemaMessage.includes("rounds") || schemaMessage.includes("par") || schemaMessage.includes("club_distances") || schemaMessage.includes("approval_status") || schemaMessage.includes("booked_lessons")) {
+          const rowsWithoutNewColumns = rows.map(({ handicap, rounds, par, club_distances, approval_status, booked_lessons, ...row }) => row);
+          const retry = await supabaseClient
+            .from("player_profiles")
+            .upsert(rowsWithoutNewColumns, { onConflict: "id" });
+          if (!retry.error) {
+            if (!options.quiet) showToast("Profiles saved. Run the latest SQL upgrades to save handicap, rounds, and club distances too.");
+            return;
+          }
+        }
+        if (!options.quiet) showToast(error.message);
+        return;
+      }
+
+      if (!options.quiet) showToast("Profile saved.");
+    }
+
+    async function connectStudentLogin() {
+      const selected = players.find((player) => player.id === selectedId);
+      const studentEmail = document.getElementById("studentLoginEmail").value.trim().toLowerCase();
+
+      if (!supabaseClient || !currentUser || currentRole !== "coach") {
+        showToast("Coach view is required.");
+        return;
+      }
+      if (!selected) {
+        showToast("Select a player first.");
+        return;
+      }
+      if (!studentEmail) {
+        showToast("Enter the student's login email.");
+        return;
+      }
+
+      const { data, error } = await supabaseClient.rpc("connect_student_profile", {
+        profile_id: selected.id,
+        student_login_email: studentEmail
+      });
+
+      if (error) {
+        const message = error.message.includes("function public.connect_student_profile")
+          ? "Run the Connect Student SQL upgrade in Supabase first."
+          : error.message;
+        updateCloudStatus(message);
+        showToast(message);
+        return;
+      }
+
+      selected.ownerId = data;
+      selected.studentEmail = studentEmail;
+      localStorage.setItem(STORE_KEY, JSON.stringify(players));
+      render();
+      showToast(`Connected ${selected.name} to ${studentEmail}.`);
+    }
+
+    function fromCloudProfile(row) {
+      return {
+        id: row.id,
+        ownerId: row.owner_id,
+        studentEmail: row.student_email ?? "",
+        approvalStatus: normalizeApprovalStatus(row.approval_status),
+        name: row.name ?? "",
+        age: String(row.age ?? ""),
+        skill: row.skill ?? "",
+        handicap: normalizeHandicap(row.handicap ?? ""),
+        contact: row.contact ?? "",
+        lessons: {
+          total: clamp(Number(row.lesson_total ?? 10), 1, 100),
+          used: clamp(Number(row.lesson_used ?? 0), 0, Number(row.lesson_total ?? 10))
+        },
+        notes: row.coach_notes ?? "",
+        stats: {
+          course: row.course ?? "",
+          par: clamp(Number(row.par ?? 72), 27, 80),
+          fairway: clamp(Number(row.fairway ?? 0), 0, 14),
+          gir: clamp(Number(row.gir ?? 0), 0, 18),
+          putts: clamp(Number(row.putts ?? 0), 0, 99),
+          totalScore: clamp(Number(row.total_score ?? 0), 1, 200)
+        },
+        clubDistances: normalizeClubDistances(row.club_distances),
+        bookedLessons: normalizeBookedLessons(row.booked_lessons),
+        rounds: normalizeRounds(row.rounds)
+      };
+    }
+
+    function toCloudProfile(player, ownerId) {
+      const lessons = normalizeLessons(player.lessons);
+      const stats = player.stats ?? {};
+      const handicap = normalizeHandicap(player.handicap);
+      return {
+        id: player.id,
+        owner_id: player.ownerId || ownerId,
+        student_email: player.studentEmail || "",
+        approval_status: normalizeApprovalStatus(player.approvalStatus),
+        name: player.name,
+        age: Number(player.age) || null,
+        skill: player.skill,
+        handicap: handicap === "" ? null : handicap,
+        contact: player.contact,
+        rounds: normalizeRounds(player.rounds),
+        club_distances: normalizeClubDistances(player.clubDistances),
+        booked_lessons: normalizeBookedLessons(player.bookedLessons),
+        lesson_total: lessons.total,
+        lesson_used: lessons.used,
+        course: stats.course ?? "",
+        par: clamp(Number(stats.par ?? 72), 27, 80),
+        fairway: clamp(Number(stats.fairway ?? 0), 0, 14),
+        gir: clamp(Number(stats.gir ?? 0), 0, 18),
+        putts: clamp(Number(stats.putts ?? 0), 0, 99),
+        total_score: clamp(Number(stats.totalScore ?? 0), 1, 200),
+        coach_notes: player.notes ?? ""
+      };
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    render();
+    void initCloud();
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
